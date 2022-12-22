@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Old Egg PC Parts!</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
+    <link rel="stylesheet" href="{{ url_for('static', filename='/css/style.css') }}">
+</head>
+<body style="background-color: whitesmoke; min-width: 800px; overflow: visible">
+
+    <nav class="navbar navbar-expand-lg" style="background-color: lightslategray; padding-left: 20px; padding-right: 20px">
+        <div class="container-fluid">
+            <label class="navbar-brand" href="/dashboard" style="text-decoration-line: none ;font-size: 40pt; color:aqua; font-style: italic;"><strong>OldEgg</strong></label>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" href="/dashboard" style="font-size: 18pt">Home</a>
+                    </li>
+                    {% if 'uid' in session %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="/personal/{{ session['uid'] }}" style="font-size: 18pt">Your Items</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/sell" style="font-size: 18pt">Sell</a>
+                        </li>
+                    {% endif %}
+                    <li class="nav-item dropdown">
+                        <label class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false" style="font-size: 18pt">Products</label>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="/dashboard/cpu" style="font-size: 18pt">CPU</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="/dashboard/motherboard" style="font-size: 18pt">Motherboard</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="/dashboard/gpu" style="font-size: 18pt">GPU</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="/dashboard/memory" style="font-size: 18pt">Memory</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="/dashboard/storage" style="font-size: 18pt">Storage</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="/dashboard/cooler" style="font-size: 18pt">Cooler</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="/dashboard/power" style="font-size: 18pt">Power</a></li>
+                        </ul>
+                    </li>
+                </ul>
+                <br>
+                {% if 'uid' not in session %}
+                <div class="d-flex">
+                    <a href="/register" style="text-decoration-line: none; color:aquamarine; margin-left: 5px; font-size: 18pt">Sign up</a>
+                    <span style="margin-left: 5px; margin-right: 5px;"> | </span>
+                    <a href="/login" style="text-decoration-line: none; color:aquamarine; font-size: 18pt">Log in</a>
+                </div>
+                {% else %}
+                    <div class="d-flex">
+                        <a href="/logout" style="text-decoration-line: none; color:aquamarine; margin-left: 5px; font-size: 18pt">Log out</a>
+                    </div>
+                {% endif %}
+                <img src="{{ url_for('static', filename='/img/cart-dark.png') }}" alt="shopping_cart" onclick="location.href='/cart';" style="margin-left: 50px">
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid d-flex flex-column align-items-start" style="margin: 10px; padding: 20px">
+        <h3><strong>Welcome {{ last_name }}</strong></h3>
+        <table class="container-fluid bordered table" style="margin: 0">
+            <thead>
+                <tr>
+                    <th scope="col">Image</th>
+                    <th scope="col">Component</th>
+                    <th scope="col">Manufacturer</th>
+                    <th scope="col">Name</th>
+                    <th scope="col">Price</th>
+                    <th scope="col">New or Used</th>
+                    <th scope="col">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if parts %}
+                    {% for part in parts %}
+                        {% set name = part['img'] %}
+                        <tr style="height: 50px">
+                            <td><img src="{{ url_for('static', filename='uploads/' + name) }}" alt="part_img" style="height: 50px" onclick="location.href='../static/uploads/{{ part.img }}';"></td>
+                            <td>{{ part['component'] }}</td>
+                            <td>{{ part['manufacturer'] }}</td>
+                            <td>{{ part['name'] }}</td>
+                            <td>{{ part['price'] }}$</td>
+                            <td>{{ part['used'] }}</td>
+                            <td>
+                                {% if session['uid'] != part['owner_id'] %}
+                                    <a class="btn btn-primary" href="/cart/add/{{ part['id'] }}">Add to cart</a>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4" crossorigin="anonymous"></script>
+</body>
+</html>

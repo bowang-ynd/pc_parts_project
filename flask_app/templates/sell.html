@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sell PC Parts!</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
+    <link rel="stylesheet" href="{{ url_for('static', filename='/css/style.css') }}">
+</head>
+<body style="background-color: whitesmoke; min-width: 800px">
+
+    <nav class="navbar navbar-expand-lg" style="background-color: lightslategray; padding-left: 20px; padding-right: 20px">
+        <div class="container-fluid">
+            <label class="navbar-brand" href="/dashboard" style="text-decoration-line: none ;font-size: 40pt; color:aqua; font-style: italic;"><strong>OldEgg</strong></label>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" href="/dashboard" style="font-size: 18pt">Home</a>
+                    </li>
+                    {% if 'uid' in session %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="/personal/{{ session['uid'] }}" style="font-size: 18pt">Your Items</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/sell" style="font-size: 18pt">Sell</a>
+                        </li>
+                    {% endif %}
+                    <li class="nav-item dropdown">
+                        <label class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false" style="font-size: 18pt">Products</label>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="/dashboard/cpu" style="font-size: 18pt">CPU</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="/dashboard/motherboard" style="font-size: 18pt">Motherboard</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="/dashboard/gpu" style="font-size: 18pt">GPU</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="/dashboard/memory" style="font-size: 18pt">Memory</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="/dashboard/storage" style="font-size: 18pt">Storage</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="/dashboard/cooler" style="font-size: 18pt">Cooler</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="/dashboard/power" style="font-size: 18pt">Power</a></li>
+                        </ul>
+                    </li>
+                </ul>
+                <br>
+                {% if 'uid' not in session %}
+                <div class="d-flex">
+                    <a href="/register" style="text-decoration-line: none; color:aquamarine; margin-left: 5px; font-size: 18pt">Sign up</a>
+                    <span style="margin-left: 5px; margin-right: 5px;"> | </span>
+                    <a href="/login" style="text-decoration-line: none; color:aquamarine; font-size: 18pt">Log in</a>
+                </div>
+                {% else %}
+                    <div class="d-flex">
+                        <a href="/logout" style="text-decoration-line: none; color:aquamarine; margin-left: 5px; font-size: 18pt">Log out</a>
+                    </div>
+                {% endif %}
+                <img src="{{ url_for('static', filename='/img/cart-dark.png') }}" alt="shopping_cart" onclick="location.href='/cart';" style="margin-left: 50px">
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid fixed-top" style="padding: 0; z-index: -1; top: 100px; min-height: 1200px">
+        <div style="z-index: -1">
+            <img src="{{ url_for('static', filename='/img/pc_background.jpg') }}" class="img-fluid" alt="pc_background" style="min-height: 800px">
+        </div>
+        <form action="/sell/process" method="POST" enctype="multipart/form-data">
+            <div id="discoverBox" class="container d-flex flex-column align-item-center justify-content-around" style="padding: 20px; max-height: 60%; min-width: 600px; top: 6%">
+                <label for="basic-url" class="form-label" style="font-size: 16pt"><strong>Details about your part:</strong></label>
+                {% with messages = get_flashed_messages(category_filter=["component"]) %}
+                {% if messages %}
+                    {% for message in messages %}
+                        <p style="color: red">{{ message }}</p>
+                    {% endfor %}
+                {% endif %}
+                {% endwith %}
+
+                <label for="basic-url" class="form-label">Component</label>
+                <div class="input-group mb-3">
+                    <select class="form-select" id="inputGroupSelect01" name="component">
+                        <option selected>Choose...</option>
+                        <option value="CPU">CPU</option>
+                        <option value="Motherboard">Motherboard</option>
+                        <option value="GPU">GPU</option>
+                        <option value="Memory">Memory</option>
+                        <option value="Storage">Storage</option>
+                        <option value="Cooler">Cooler</option>
+                        <option value="Power">Power</option>
+                    </select>
+                </div>
+
+                <label for="basic-url" class="form-label">Manufacturer</label>
+                <div class="input-group mb-3">
+                    <input type="text" class="form-control" id="basic-url" aria-describedby="basic-addon3" name="manufacturer">
+                </div>
+
+                <label for="basic-url" class="form-label">Part Name</label>
+                <div class="input-group mb-3">
+                    <input type="text" class="form-control" id="basic-url" aria-describedby="basic-addon3" name="name">
+                </div>
+
+                <label for="basic-url" class="form-label">Price</label>
+                <div class="input-group mb-3">
+                    <span class="input-group-text" id="basic-addon1">$</span>
+                    <input type="number" class="form-control" id="basic-url" aria-describedby="basic-addon3" min="1" name="price">
+                </div>
+
+                <div class="container d-flex flex-column align-items-center justify-content-evenly">
+                    <label class="form-label" style="margin-bottom: 10px">New or Used?</label>
+                    <div class="container d-flex justify-content-evenly" style="margin-bottom: 10px">
+                        <label class="form-check-label">New</label>
+                        <input class="form-check-input" type="radio" name="used" id="flexRadioDefault1" value="New" checked>
+                        <span>|</span>
+                        <label class="form-check-label">Used</label>
+                        <input class="form-check-input" type="radio" name="used" id="flexRadioDefault1" value="Used">
+                    </div>
+                </div>
+
+                <div class="input-group mb-3">
+                    <input type="file" class="form-control" id="inputGroupFile02" name="file">
+                </div>
+
+                <button class="btn btn-primary" href="/random" style="max-width: 90px">Submit</button>
+            </div>
+        </form>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4" crossorigin="anonymous"></script>
+</body>
+</html>
